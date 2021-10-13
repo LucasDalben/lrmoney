@@ -2,20 +2,15 @@ import { createContext, ReactNode, useEffect, useState } from 'react'
 import { api } from './services/api'
 
 interface Transaction {
-    id: string,
+    id: number,
     title: string,
+    amount: number,
     type: string,
     category: string,
-    amount: number,
     createdAt: string,
 }
 
-interface TransactionInput {
-    title: string,
-    type: string,
-    category: string,
-    amount: number,
-}
+type TransactionInput = Omit<Transaction, 'id' | 'createdAt'>
 
 interface TransactionsProviderProps {
     children: ReactNode;
@@ -23,12 +18,12 @@ interface TransactionsProviderProps {
 
 interface TransactionsContextData {
     transactions: Transaction[],
-    createTransaction: (transaction: TransactionInput )=> Promise<void> 
+    createTransaction: (transactionInput:TransactionInput )=> Promise<void> 
 }
 
 export const TransactionsContext = createContext<TransactionsContextData>({} as TransactionsContextData)
 
-export function TransactionsProvider({children}: TransactionsProviderProps){
+export function TransactionsProvider({children}:TransactionsProviderProps){
 
     const [transactions, setTransactions] = useState<Transaction[]>([])
 
@@ -37,13 +32,22 @@ export function TransactionsProvider({children}: TransactionsProviderProps){
             .then(response => setTransactions(response.data['transactions']))
     }, [])
 
-    async function createTransaction(transactionInput: TransactionInput){
+    async function createTransaction(transactionInput:TransactionInput){
 
-       const response = await api.post('/transactions', transactionInput)
-      
+        const response = await api.post('/transactions', {
+           ...transactionInput,
+           createdAt: new Date()})
+        
+        /*
 
-       
-       
+        Não consigo acessar esse "transaction" de dentro do data e nem lançar direto o ".data"
+        const { transaction } = response.data 
+
+        setTransactions([
+            ...transactions,
+            transaction
+        ])
+        */  
     }
 
     return(
