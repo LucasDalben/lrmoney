@@ -35,19 +35,16 @@ export function TransactionsProvider({children}:TransactionsProviderProps){
     async function createTransaction(transactionInput:TransactionInput){
 
         const response = await api.post('/transactions', {
-           ...transactionInput,
-           createdAt: new Date()})
+            ...transactionInput,
+            createdAt: new Date()
+           })
         
-        /*
-
-        Não consigo acessar esse "transaction" de dentro do data e nem lançar direto o ".data"
-        const { transaction } = response.data 
-
+        const  transaction  = response.data
+        
         setTransactions([
             ...transactions,
             transaction
-        ])
-        */  
+        ])  
     }
 
     return(
